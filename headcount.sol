@@ -3,8 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract HeadCount is Ownable {
-
+contract StudentCount is Ownable {
     struct TimeRecord {
         uint256 time;
         bool inBuilding;
@@ -19,31 +18,53 @@ contract HeadCount is Ownable {
 
     function enterBuilding() public {
         if (msg.sender == owner()) {
-            require(!teacherTimeRecords[msg.sender].inBuilding, "Teacher already clocked in");
+            require(
+                !teacherTimeRecords[msg.sender].inBuilding,
+                "Teacher already clocked in"
+            );
             teacherTimeRecords[msg.sender] = TimeRecord(block.timestamp, true);
         } else {
-            require(!studentTimeRecords[msg.sender].inBuilding, "Student already in the building");
+            require(
+                !studentTimeRecords[msg.sender].inBuilding,
+                "Student already in the building"
+            );
             studentTimeRecords[msg.sender] = TimeRecord(block.timestamp, true);
         }
     }
 
     function leaveBuilding() public {
         if (msg.sender == owner()) {
-            require(teacherTimeRecords[msg.sender].inBuilding, "Teacher not clocked in");
+            require(
+                teacherTimeRecords[msg.sender].inBuilding,
+                "Teacher not clocked in"
+            );
             teacherTimeRecords[msg.sender] = TimeRecord(block.timestamp, false);
         } else {
-            require(studentTimeRecords[msg.sender].inBuilding, "Student not in the building");
+            require(
+                studentTimeRecords[msg.sender].inBuilding,
+                "Student not in the building"
+            );
             studentTimeRecords[msg.sender] = TimeRecord(block.timestamp, false);
         }
     }
 
-    function getStudentEnterTime(address studentAddress) public view returns (uint256) {
-        require(studentTimeRecords[studentAddress].inBuilding, "Student not in the building");
+    function getStudentEnterTime(
+        address studentAddress
+    ) public view returns (uint256) {
+        require(
+            studentTimeRecords[studentAddress].inBuilding,
+            "Student not in the building"
+        );
         return studentTimeRecords[studentAddress].time;
     }
 
-    function getStudentLeaveTime(address studentAddress) public view returns (uint256) {
-        require(!studentTimeRecords[studentAddress].inBuilding, "Student still in the building");
+    function getStudentLeaveTime(
+        address studentAddress
+    ) public view returns (uint256) {
+        require(
+            !studentTimeRecords[studentAddress].inBuilding,
+            "Student still in the building"
+        );
         return studentTimeRecords[studentAddress].time;
     }
 }
